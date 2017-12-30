@@ -1,12 +1,11 @@
 class LoginsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_login, only: [:show, :edit, :update, :destroy]
 
   # GET /logins
   # GET /logins.json
   def index
-    if current_user.customer.logins.size == 0
-      SpectreApi.refresh_logins(current_user)
-    end
+    SpectreApi.refresh_logins(current_user) if params[:refresh]
     @logins = current_user.customer.logins
   end
 
@@ -22,6 +21,16 @@ class LoginsController < ApplicationController
 
   # GET /logins/1/edit
   def edit
+  end
+
+  def login_create 
+    if current_user.customer
+      api = Saltedge.new(CLIENT_ID, SERVICE_SECRET)
+      response = api.request("POST", "https://www.saltedge.com/api/v3/tokens/create", {"data" => {"customer_id" => current_user.customer.customer_id, "fetch_type" => "recent", "return_to" => "#{logins_url}?refresh=true"}})
+      hash = JSON.parse(response.body)
+
+      redirect_to hash['data']['connect_url']
+    end
   end
 
   # POST /logins

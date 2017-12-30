@@ -15,7 +15,7 @@
   <tbody>
     <% @logins.each do |login| %>
       <tr>
-        <td><%= link_to login.login_id, login_path(login) %></td>
+        <td><%= link_to login.login_id, accounts_path(login_id: login.id) %></td>
         <td><%= login.status %></td>
         <td><%= login.provider %></td>
         <td><%= login.customer.identifier %></td>
@@ -35,6 +35,8 @@
   </tbody>
 </table>
 
-<%= link_to t('.new', :default => t("helpers.links.new")),
-            new_login_path,
+<%= link_to 'Create login', login_create_path, :class => 'btn btn-default' %>
+
+<%= link_to 'Refresh data',
+            logins_path(refresh: 'true'),
             :class => 'btn btn-primary' %>

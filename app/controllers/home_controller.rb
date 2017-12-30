@@ -12,7 +12,6 @@ class HomeController < ApplicationController
       customer.user = current_user
       customer.save
     end
-
   end
 
   def login_create 
