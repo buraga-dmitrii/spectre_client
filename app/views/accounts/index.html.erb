@@ -13,28 +13,17 @@
       <th><%= model_class.human_attribute_name(:balance) %></th>
       <th><%= model_class.human_attribute_name(:currency) %></th>
       <th><%= model_class.human_attribute_name(:nature) %></th>
-      <th><%=t '.actions', :default => t("helpers.actions") %></th>
     </tr>
   </thead>
   <tbody>
     <% @accounts.each do |account| %>
       <tr>
-        <td><%= link_to account.account_id, account_path(account) %></td>
+        <td><%= link_to account.account_id,  transactions_path(account_id: account.id) %></td>
         <td><%= account.name %></td>
         <td><%= account.balance %></td>
         <td><%= account.currency %></td>
         <td><%= account.nature %></td>
-        <td>
-          <%= link_to t('.show', :default => t("helpers.links.show")),
-                      account_path(account), :class => 'btn btn-default btn-xs' %>
-          <%= link_to t('.edit', :default => t("helpers.links.edit")),
-                      edit_account_path(account), :class => 'btn btn-default btn-xs' %>
-          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
-                      account_path(account),
-                      :method => :delete,
-                      :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
-                      :class => 'btn btn-xs btn-danger' %>
-        </td>
+        
       </tr>
     <% end %>
   </tbody>

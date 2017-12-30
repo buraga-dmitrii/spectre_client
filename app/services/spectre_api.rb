@@ -38,4 +38,27 @@ class SpectreApi
 
     login.reload
   end
+
+  def self.refresh_transactions(account)
+    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
+    response = api.request("GET", "https://www.saltedge.com/api/v3/transactions?account_id=#{account.account_id}")
+    hash = JSON.parse(response.body)
+    account.transactions.delete_all
+
+    hash['data'].each do |transaction|
+      new_transaction = Transaction.new
+      new_transaction.transaction_id = transaction['id']
+      new_transaction.currency = transaction['currency_code']
+      new_transaction.category = transaction['category']
+      new_transaction.amount = transaction['amount']
+      new_transaction.description = transaction['description']
+      new_transaction.made_on = transaction['made_on']
+      new_transaction.mode = transaction['mode']
+      new_transaction.status = transaction['status']
+      new_transaction.account = account
+      new_transaction.save
+    end
+
+    account.reload
+  end  
 end

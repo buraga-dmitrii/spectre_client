@@ -14,13 +14,5 @@ class HomeController < ApplicationController
     end
   end
 
-  def login_create 
-    if current_user.customer
-      api = Saltedge.new(CLIENT_ID, SERVICE_SECRET)
-      response = api.request("POST", "https://www.saltedge.com/api/v3/tokens/create", {"data" => {"customer_id" => current_user.customer.customer_id, "fetch_type" => "recent", "return_to" => "#{logins_url}"}})
-      hash = JSON.parse(response.body)
-
-      redirect_to hash['data']['connect_url']
-    end
-  end
+  
 end

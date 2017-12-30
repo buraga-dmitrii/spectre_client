@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  transaction_id: 1
+  category: MyString
+  currency: MyString
+  amount: 9.99
+  description: MyString
+  made_on: MyString
+  mode: MyString
+  status: MyString
+  account: one
+
+two:
+  transaction_id: 1
+  category: MyString
+  currency: MyString
+  amount: 9.99
+  description: MyString
+  made_on: MyString
+  mode: MyString
+  status: MyString
+  account: two
