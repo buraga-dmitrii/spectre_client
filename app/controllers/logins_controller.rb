@@ -10,8 +10,12 @@ class LoginsController < ApplicationController
   end
 
   def login_refresh
-    SpectreApi.refresh_login(@login) if @login
-    redirect_to action: 'index'
+    if @login
+      callback_url = SpectreApi.refresh_login(@login, logins_url) 
+      redirect_to callback_url
+    else  
+      redirect_to logins_url
+    end   
   end
 
   def login_reconnect

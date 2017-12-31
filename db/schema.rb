@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171230132258) do
+ActiveRecord::Schema.define(version: 20171231134636) do
 
   create_table "accounts", force: :cascade do |t|
     t.integer "account_id"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 20171230132258) do
     t.integer "customer_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "next_refresh_possible_at"
     t.index ["customer_id"], name: "index_logins_on_customer_id"
   end
 

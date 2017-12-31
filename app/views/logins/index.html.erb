@@ -21,9 +21,10 @@
         <td><%= login.customer.identifier %></td>
         <td>
           <%= link_to 'Refresh',
-                      login_refresh_path(id: login.id), :class => 'btn btn-default btn-xs' %>
+                      login_refresh_path(id: login.id),
+                      :class => "btn btn-default btn-xs  #{disabled?(login)}" %>
           <%= link_to 'Reconnect',
-                      login_reconnect_path(id: login.id), :class => 'btn btn-default btn-xs' %>
+                      login_reconnect_path(id: login.id), :class => "btn btn-default btn-xs"  %>
           <%= link_to 'Destroy',
                       login_path(login),
                       :method => :delete,
@@ -36,4 +37,6 @@
 </table>
 
 <%= link_to 'Create login', login_create_path, :class => 'btn btn-default' %>
+
+<%= link_to 'Update logins', logins_url(refresh: true), :class => 'btn btn-primary' %>
 
