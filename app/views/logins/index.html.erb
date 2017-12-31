@@ -20,11 +20,11 @@
         <td><%= login.provider %></td>
         <td><%= login.customer.identifier %></td>
         <td>
-          <%= link_to t('.show', :default => t("helpers.links.show")),
-                      login_path(login), :class => 'btn btn-default btn-xs' %>
-          <%= link_to t('.edit', :default => t("helpers.links.edit")),
-                      edit_login_path(login), :class => 'btn btn-default btn-xs' %>
-          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+          <%= link_to 'Refresh',
+                      login_refresh_path(id: login.id), :class => 'btn btn-default btn-xs' %>
+          <%= link_to 'Reconnect',
+                      login_reconnect_path(id: login.id), :class => 'btn btn-default btn-xs' %>
+          <%= link_to 'Destroy',
                       login_path(login),
                       :method => :delete,
                       :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
@@ -37,6 +37,3 @@
 
 <%= link_to 'Create login', login_create_path, :class => 'btn btn-default' %>
 
-<%= link_to 'Refresh data',
-            logins_path(refresh: 'true'),
-            :class => 'btn btn-primary' %>

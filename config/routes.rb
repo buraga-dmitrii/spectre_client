@@ -7,5 +7,7 @@ Rails.application.routes.draw do
   
   root to: "home#index"
   get :login_create, to: 'logins#login_create'
+  get :login_refresh, to: 'logins#login_refresh'
+  get :login_reconnect, to: 'logins#login_reconnect'
   get :accounts_refresh, to: 'accounts#refresh'
 end

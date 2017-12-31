@@ -6,9 +6,6 @@ class TransactionsController < ApplicationController
   def index
     if params[:account_id]
       @account = Account.where(id: params[:account_id]).first
-      if @account.transactions.size == 0
-        SpectreApi.refresh_transactions(@account)
-      end
       @transactions = @account.transactions     
     else
      redirect_to logins_path

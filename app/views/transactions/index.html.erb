@@ -21,7 +21,7 @@
   <tbody>
     <% @transactions.each do |transaction| %>
       <tr>
-        <td><%= link_to transaction.transaction_id, transaction_path(transaction) %></td>
+        <td><%= transaction.transaction_id %></td>
         <td><%= transaction.category %></td>
         <td><%= transaction.currency %></td>
         <td><%= transaction.amount %></td>

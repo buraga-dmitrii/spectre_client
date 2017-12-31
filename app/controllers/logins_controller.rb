@@ -1,14 +1,27 @@
 class LoginsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_login, only: [:show, :edit, :update, :destroy]
+  before_action :set_login, only: [:show, :edit, :update, :destroy, :login_refresh, :login_reconnect]
 
   # GET /logins
   # GET /logins.json
   def index
-    SpectreApi.refresh_logins(current_user) if params[:refresh]
+    SpectreApi.update_logins(current_user) if params[:refresh]
     @logins = current_user.customer.logins
   end
 
+  def login_refresh
+    SpectreApi.refresh_login(@login) if @login
+    redirect_to action: 'index'
+  end
+
+  def login_reconnect
+    if @login
+      callback_url = SpectreApi.reconnect_login(@login, logins_url) 
+      redirect_to callback_url
+    else
+      redirect_to logins_url
+    end  
+  end
   # GET /logins/1
   # GET /logins/1.json
   def show
@@ -25,11 +38,8 @@ class LoginsController < ApplicationController
 
   def login_create 
     if current_user.customer
-      api = Saltedge.new(CLIENT_ID, SERVICE_SECRET)
-      response = api.request("POST", "https://www.saltedge.com/api/v3/tokens/create", {"data" => {"customer_id" => current_user.customer.customer_id, "fetch_type" => "recent", "return_to" => "#{logins_url}?refresh=true"}})
-      hash = JSON.parse(response.body)
-
-      redirect_to hash['data']['connect_url']
+      callback_url = SpectreApi.create_login(current_user.customer.customer_id, logins_url)
+      redirect_to callback_url
     end
   end
 
@@ -74,6 +84,7 @@ class LoginsController < ApplicationController
   # DELETE /logins/1
   # DELETE /logins/1.json
   def destroy
+    SpectreApi.destroy_login(@login) 
     @login.destroy
     respond_to do |format|
       format.html { redirect_to logins_url, notice: 'Login was successfully destroyed.' }

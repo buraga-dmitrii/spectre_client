@@ -1,7 +1,39 @@
 class SpectreApi
   extend ServiceInitializer
 
-  def self.refresh_logins(current_user)
+  def self.create_login(customer_id, logins_url)
+    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
+      response = api.request("POST", "https://www.saltedge.com/api/v3/tokens/create", {"data" => {"customer_id" => customer_id, "fetch_type" => "recent", "return_to" => "#{logins_url}?refresh=true"}})
+      hash = JSON.parse(response.body)
+      hash['data']['connect_url']
+  end
+
+  def self.refresh_login(login)
+    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
+    response = api.request("PUT", "https://www.saltedge.com/api/v3/logins/#{login.login_id}/refresh", {  "data" => {   "fetch_type" => "recent" }})
+    hash = JSON.parse(response.body)
+    login_hash     = hash['data']
+    login.login_id = login_hash['id']
+    login.status   = login_hash['status']
+    login.provider = login_hash['provider_name']
+    login.save
+
+    SpectreApi.update_accounts(login)
+  end
+
+  def self.destroy_login(login)
+    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
+    response = api.request("DELETE", "https://www.saltedge.com/api/v3/logins/#{login.login_id}")
+  end
+
+  def self.reconnect_login(login, logins_url)
+    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
+      response = api.request("POST", "https://www.saltedge.com/api/v3/tokens/reconnect", {"data" => {"login_id" => login.login_id, "fetch_type" => "recent", "return_to" => "#{logins_url}?refresh=true"}})
+      hash = JSON.parse(response.body)
+      hash['data']['connect_url']
+  end    
+
+  def self.update_logins(current_user)
     customer = current_user.customer
     api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
     response = api.request("GET", "https://www.saltedge.com/api/v3/logins?customer_id=#{customer.customer_id}")
@@ -15,15 +47,17 @@ class SpectreApi
       new_login.provider = login['provider_name']
       new_login.customer = current_user.customer
       new_login.save
+
+      SpectreApi.update_accounts(new_login)
     end
     customer.reload
   end
  
-  def self.refresh_accounts(login)
+  def self.update_accounts(login)
     api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
     response = api.request("GET", "https://www.saltedge.com/api/v3/accounts?login_id=#{login.login_id}")
     hash = JSON.parse(response.body)
-    login.accounts.delete_all
+    login.accounts.destroy_all
 
     hash['data'].each do |account|
       new_account = Account.new
@@ -34,12 +68,13 @@ class SpectreApi
       new_account.nature = account['nature']
       new_account.login = login
       new_account.save
+
+      SpectreApi.update_transactions(new_account)
     end
 
-    login.reload
   end
 
-  def self.refresh_transactions(account)
+  def self.update_transactions(account)
     api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
     response = api.request("GET", "https://www.saltedge.com/api/v3/transactions?account_id=#{account.account_id}")
     hash = JSON.parse(response.body)
@@ -58,7 +93,5 @@ class SpectreApi
       new_transaction.account = account
       new_transaction.save
     end
-
-    account.reload
   end  
 end

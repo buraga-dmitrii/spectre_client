@@ -1,4 +1,4 @@
 class Login < ApplicationRecord
-  has_many :accounts
   belongs_to :customer
+  has_many :accounts, dependent: :destroy
 end

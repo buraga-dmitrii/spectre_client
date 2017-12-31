@@ -23,7 +23,6 @@ class Saltedge
       params:     as_json(params)
     }
 
-
     RestClient::Request.execute(
       method:  hash[:method],
       url:     hash[:url],

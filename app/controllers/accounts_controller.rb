@@ -7,18 +7,10 @@ class AccountsController < ApplicationController
   def index
     if params[:login_id]
       @login = Login.where(id: params[:login_id]).first
-      if @login.accounts.size == 0
-        SpectreApi.refresh_accounts(@login)
-      end
       @accounts = @login.accounts     
     else
      redirect_to logins_path
     end 
-  end
-
-  def refresh
-    SpectreApi.refresh_logins(current_user)
-    redirect_back fallback_location: root_path
   end
 
   # GET /accounts/1
