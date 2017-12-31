@@ -9,18 +9,15 @@
   </head>
 
   <body>
-   <!--  <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>   -->
     <div>
     <% if user_signed_in? %>
-    <p><%= link_to current_user.email, edit_user_registration_path(current_user) %>
-        <%= link_to 'Logout', destroy_user_session_path, :method => :delete %></p>
-
-  <% else %>
-    <%= link_to 'Login', new_user_session_path %> 
-  <% end %>
-     <!--  <%= link_to 'Home', root_path  %> -->
-      <!-- <%= link_to 'Logins', logins_path  %> -->
+      <p>
+        <%= link_to current_user.email, edit_user_registration_path(current_user) %>
+        <%= link_to 'Logout', destroy_user_session_path, :method => :delete %>
+      </p>
+    <% else %>
+      <%= link_to 'Login', new_user_session_path %> 
+    <% end %>
     </div>
     <%= yield %>
   </body>
