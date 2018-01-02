@@ -1,0 +1,39 @@
+<%- model_class = Transaction -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h1>
+  <h3>
+    <%= "Account '#{@account.name}'" %>
+  </h3>  
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><%= model_class.human_attribute_name(:transaction_id) %></th>
+      <th><%= model_class.human_attribute_name(:category) %></th>
+      <th><%= model_class.human_attribute_name(:currency) %></th>
+      <th><%= model_class.human_attribute_name(:amount) %></th>
+      <th><%= model_class.human_attribute_name(:description) %></th>
+      <th><%= model_class.human_attribute_name(:made_on) %></th>
+      <th><%= model_class.human_attribute_name(:mode) %></th>
+      <th><%= model_class.human_attribute_name(:status) %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @transactions.each do |transaction| %>
+      <tr>
+        <td><%= transaction.transaction_id %></td>
+        <td><%= transaction.category %></td>
+        <td><%= transaction.currency %></td>
+        <td><%= transaction.amount %></td>
+        <td><%= transaction.description %></td>
+        <td><%= transaction.made_on %></td>
+        <td><%= transaction.mode %></td>
+        <td><%= transaction.status %></td>
+        
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              :back, :class => 'btn btn-default'  %>

@@ -1,0 +1,19 @@
+
+<div class="row">
+  <div class="col-sm-12 text-xs-center bootstrap-welcome">
+  <% if user_signed_in? %>
+    <h1>Welcome <%= current_user.email %></h1>
+    <p><%= link_to 'edit profile', edit_user_registration_path(current_user) %></p>
+    <p><%= link_to 'logout', destroy_user_session_path, :method => :delete %></p>
+
+  <% else %>
+    <%= link_to 'Login', new_user_session_path %> 
+  <% end %>
+  </div>
+</div>
+
+
+
+<div>
+  <p><%= link_to 'Create login', login_create_path %></p>
+</div>
