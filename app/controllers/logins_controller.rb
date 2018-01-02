@@ -5,13 +5,18 @@ class LoginsController < ApplicationController
   # GET /logins
   # GET /logins.json
   def index
-    SpectreApi.update_logins(current_user) if params[:refresh]
+    if params[:refresh]
+      SpectreApi.update_logins(current_user) 
+    end
     @logins = current_user.customer.logins
+  end
+
+  def update_logins
   end
 
   def login_refresh
     if @login
-      callback_url = SpectreApi.refresh_login(@login, logins_url) 
+      callback_url = SpectreApi.refresh_login(@login, update_logins_url) 
       redirect_to callback_url
     else  
       redirect_to logins_url
@@ -20,7 +25,7 @@ class LoginsController < ApplicationController
 
   def login_reconnect
     if @login
-      callback_url = SpectreApi.reconnect_login(@login, logins_url) 
+      callback_url = SpectreApi.reconnect_login(@login, update_logins_url) 
       redirect_to callback_url
     else
       redirect_to logins_url
@@ -42,7 +47,7 @@ class LoginsController < ApplicationController
 
   def login_create 
     if current_user.customer
-      callback_url = SpectreApi.create_login(current_user.customer.customer_id, logins_url)
+      callback_url = SpectreApi.create_login(current_user.customer.customer_id, update_logins_url)
       redirect_to callback_url
     end
   end

@@ -2,41 +2,53 @@
 <div class="page-header">
   <h1><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h1>
 </div>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th><%= model_class.human_attribute_name(:login_id) %></th>
-      <th><%= model_class.human_attribute_name(:status) %></th>
-      <th><%= model_class.human_attribute_name(:provider) %></th>
-      <th><%= model_class.human_attribute_name(:customer_id) %></th>
-      <th><%=t '.actions', :default => t("helpers.actions") %></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @logins.each do |login| %>
+<%- if false %>
+  <div class="container">
+      <h3>
+        Updating data information...
+      </h3>
+      <div class="progress progress-striped active">
+          <div class="bar" style="width: 100%;"></div>
+      </div>
+  </div>
+<% else %>
+  <table class="table table-striped">
+    <thead>
       <tr>
-        <td><%= link_to login.login_id, accounts_path(login_id: login.id) %></td>
-        <td><%= login.status %></td>
-        <td><%= login.provider %></td>
-        <td><%= login.customer.identifier %></td>
-        <td>
-          <%= link_to 'Refresh',
-                      login_refresh_path(id: login.id),
-                      :class => "btn btn-default btn-xs  #{disabled?(login)}" %>
-          <%= link_to 'Reconnect',
-                      login_reconnect_path(id: login.id), :class => "btn btn-default btn-xs"  %>
-          <%= link_to 'Destroy',
-                      login_path(login),
-                      :method => :delete,
-                      :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
-                      :class => 'btn btn-xs btn-danger' %>
-        </td>
+        <th><%= model_class.human_attribute_name(:login_id) %></th>
+        <th><%= model_class.human_attribute_name(:status) %></th>
+        <th><%= model_class.human_attribute_name(:provider) %></th>
+        <th><%= model_class.human_attribute_name(:customer_id) %></th>
+        <th><%=t '.actions', :default => t("helpers.actions") %></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @logins.each do |login| %>
+        <tr>
+          <td><%= link_to login.login_id, accounts_path(login_id: login.id) %></td>
+          <td><%= login.status %></td>
+          <td><%= login.provider %></td>
+          <td><%= login.customer.identifier %></td>
+          <td>
+            <%= link_to 'Refresh',
+                        login_refresh_path(id: login.id),
+                        :class => "btn btn-default btn-xs  #{disabled?(login)}" %>
+            <%= link_to 'Reconnect',
+                        login_reconnect_path(id: login.id), :class => "btn btn-default btn-xs"  %>
+            <%= link_to 'Destroy',
+                        login_path(login),
+                        :method => :delete,
+                        :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) },
+                        :class => 'btn btn-xs btn-danger' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
-<%= link_to 'Create login', login_create_path, :class => 'btn btn-default' %>
+  <%= link_to 'Create login', login_create_path, :class => 'btn btn-default' %>
 
-<%= link_to 'Update logins', logins_url(refresh: true), :class => 'btn btn-primary' %>
+  <%= link_to 'Update logins', update_logins_path, :class => 'btn btn-primary' %>
+
+<% end %>
 
