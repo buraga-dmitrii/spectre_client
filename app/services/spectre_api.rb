@@ -1,3 +1,4 @@
+require "#{Rails.root}/lib/saltedge"
 class SpectreApi
   extend ServiceInitializer
 
