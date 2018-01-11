@@ -10,8 +10,10 @@
 
   <body>
     <div>
+
     <% if user_signed_in? %>
       <p>
+        <%= link_to 'Home', logins_path %>
         <%= link_to current_user.email, edit_user_registration_path(current_user) %>
         <%= link_to 'Logout', destroy_user_session_path, :method => :delete %>
       </p>
