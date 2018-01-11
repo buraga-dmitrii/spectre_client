@@ -1,40 +1,73 @@
 require "#{Rails.root}/lib/saltedge"
 class SpectreApi
-  extend ServiceInitializer
+
+  def self.create_customer(current_user)
+    response = request("POST",
+                       "https://www.saltedge.com/api/v3/customers/",
+                       {"data" => 
+                          {"identifier" => current_user.email}
+                       }
+                      )
+    customer = Customer.new
+    customer.customer_id = response['data']['id']
+    customer.identifier = response['data']['identifier']
+    customer.secret = response['data']['secret']
+    customer.user = current_user
+    customer.save
+  end
+
 
   def self.create_login(customer_id, logins_url)
-    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
-      response = api.request("POST", "https://www.saltedge.com/api/v3/tokens/create", {"data" => {"customer_id" => customer_id, "fetch_type" => "recent", "return_to" => "#{logins_url}?refresh=true"}})
-      hash = JSON.parse(response.body)
-      hash['data']['connect_url']
+    response = request("POST",
+                       "https://www.saltedge.com/api/v3/tokens/create",
+                       {"data" => 
+                          {"customer_id" => customer_id,
+                           "fetch_type" => "recent",
+                           "return_to" => "#{logins_url}?refresh=true"
+                           }
+                        }
+                       )
+    response['data']['connect_url']
   end
 
   def self.refresh_login(login, logins_url)
-    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
-    response = api.request("POST", "https://www.saltedge.com/api/v3/tokens/refresh", {"data" => {"login_id" => login.login_id, "fetch_type" => "recent", "return_to" => "#{logins_url}"}})
-    hash = JSON.parse(response.body)
-    hash['data']['connect_url']
+    response = request("POST",
+                       "https://www.saltedge.com/api/v3/tokens/refresh",
+                       {"data" => 
+                          {"login_id" => login.login_id,
+                           "fetch_type" => "recent",
+                           "return_to" => "#{logins_url}"
+                           }
+                       }
+                      )
+    response['data']['connect_url']
   end
 
   def self.destroy_login(login)
-    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
-    response = api.request("DELETE", "https://www.saltedge.com/api/v3/logins/#{login.login_id}")
+    response = request("DELETE",
+                       "https://www.saltedge.com/api/v3/logins/#{login.login_id}")
   end
 
   def self.reconnect_login(login, logins_url)
-    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
-      response = api.request("POST", "https://www.saltedge.com/api/v3/tokens/reconnect", {"data" => {"login_id" => login.login_id, "fetch_type" => "recent", "return_to" => "#{logins_url}?refresh=true"}})
-      hash = JSON.parse(response.body)
-      hash['data']['connect_url']
+    response = request("POST",
+                       "https://www.saltedge.com/api/v3/tokens/reconnect",
+                       {"data" => 
+                          {"login_id" => login.login_id,
+                           "fetch_type" => "recent",
+                           "return_to" => "#{logins_url}?refresh=true"
+                          }
+                        }
+                      )
+    response['data']['connect_url']
   end    
 
   def self.update_logins(current_user)
     customer = current_user.customer
-    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
-    response = api.request("GET", "https://www.saltedge.com/api/v3/logins?customer_id=#{customer.customer_id}")
-    hash = JSON.parse(response.body)
+    response = request("GET",
+                       "https://www.saltedge.com/api/v3/logins?customer_id=#{customer.customer_id}")
     customer.logins.destroy_all
-    hash['data'].each do |login|
+
+    response['data'].each do |login|
       new_login = Login.new
       new_login.login_id = login['id']
       new_login.status = login['status']
@@ -49,12 +82,11 @@ class SpectreApi
   end
  
   def self.update_accounts(login)
-    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
-    response = api.request("GET", "https://www.saltedge.com/api/v3/accounts?login_id=#{login.login_id}")
-    hash = JSON.parse(response.body)
+    response = request("GET",
+                       "https://www.saltedge.com/api/v3/accounts?login_id=#{login.login_id}")
     login.accounts.destroy_all
 
-    hash['data'].each do |account|
+    response['data'].each do |account|
       new_account = Account.new
       new_account.account_id = account['id']
       new_account.currency = account['currency_code']
@@ -70,12 +102,11 @@ class SpectreApi
   end
 
   def self.update_transactions(account)
-    api = Saltedge.new(Rails.application.secrets.client_id, Rails.application.secrets.service_secret)
-    response = api.request("GET", "https://www.saltedge.com/api/v3/transactions?account_id=#{account.account_id}")
-    hash = JSON.parse(response.body)
+    response = request("GET",
+                       "https://www.saltedge.com/api/v3/transactions?account_id=#{account.account_id}")
     account.transactions.delete_all
 
-    hash['data'].each do |transaction|
+    response['data'].each do |transaction|
       new_transaction = Transaction.new
       new_transaction.transaction_id = transaction['id']
       new_transaction.currency = transaction['currency_code']
@@ -89,4 +120,14 @@ class SpectreApi
       new_transaction.save
     end
   end  
+
+  private
+
+    def self.request(method, url, data={})
+      api = Saltedge.new(Rails.application.secrets.client_id,
+                         Rails.application.secrets.service_secret)
+      response = api.request(method, url, data)
+      JSON.parse(response.body)
+    end
+
 end
