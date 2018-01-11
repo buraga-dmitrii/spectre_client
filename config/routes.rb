@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   resources :transactions, only: [:index]
-  resources :accounts
+  resources :accounts, only: [:index]
   resources :logins
   devise_for :users
   

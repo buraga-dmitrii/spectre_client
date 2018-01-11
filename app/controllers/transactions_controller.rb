@@ -20,9 +20,8 @@ class TransactionsController < ApplicationController
 
   
   private
-
+  
     def transaction_params
       params.permit(:account_id)
     end
-
 end
