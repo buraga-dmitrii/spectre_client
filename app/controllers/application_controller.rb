@@ -7,17 +7,8 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource)
     unless current_user.customer
-      api = Saltedge.new(CLIENT_ID, SERVICE_SECRET)
-      response = api.request("POST", "https://www.saltedge.com/api/v3/customers/", {"data" => {"identifier" => current_user.email}})
-      hash = JSON.parse(response.body)
-      customer = Customer.new
-      customer.customer_id = hash['data']['id']
-      customer.identifier = hash['data']['identifier']
-      customer.secret = hash['data']['secret']
-      customer.user = current_user
-      customer.save
+      SpectreApi.create_customer(current_user) 
     end
-        
     logins_path
   end
 
