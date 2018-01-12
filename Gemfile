@@ -52,6 +52,17 @@ group :development, :test do
   gem 'pry-rails'
   gem 'awesome_print'
 
+  gem 'rspec-rails'
+  gem 'rails-controller-testing'
+  gem 'faker', :git => 'git://github.com/stympy/faker.git', :branch => 'master'
+  gem 'factory_bot_rails'
+  gem 'shoulda-matchers', '~> 3.1'  
+  gem 'vcr'
+  gem 'webmock'
+  gem 'database_cleaner'
+  gem 'poltergeist'
+
+
 end
 
 group :development do
