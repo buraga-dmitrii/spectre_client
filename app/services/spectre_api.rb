@@ -15,6 +15,11 @@ class SpectreApi
     customer.save
   end
 
+  def self.destroy_customer(customer)
+    response = request('DELETE',
+                       "#{BASE_URL}/customers/#{customer.customer_id}")
+  end
+
   def self.create_login(customer_id, logins_url)
     response = request('POST',
                        "#{BASE_URL}/tokens/create",
